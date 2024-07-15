@@ -178,7 +178,7 @@ const Connected = () => {
   return (
     <div
       className={`min-h-screen flex-col py-24 container ${
-        show ? "flex" : "hidden"
+        show && publicKey ? "flex" : "hidden"
       }`}
     >
       <div className={"mb-4"}>

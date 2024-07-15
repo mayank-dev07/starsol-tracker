@@ -177,7 +177,7 @@ const Transaction = () => {
     <>
       <div
         className={`min-h-screen flex-col py-24 container ${
-          show ? "flex" : "hidden"
+          show && publicKey ? "flex" : "hidden"
         }`}
       >
         <div className={"mb-4"}>
@@ -339,7 +339,7 @@ const Transaction = () => {
 
       <div
         className={`text-center p-4 ${
-          show ? "hidden" : "flex"
+          show && publicKey ? "hidden" : "flex"
         } min-h-[60vh] justify-center items-center`}
       >
         <span className="text-blue-500">
