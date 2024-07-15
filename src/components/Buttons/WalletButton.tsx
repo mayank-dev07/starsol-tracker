@@ -80,7 +80,7 @@ const WalletButton = () => {
               />
             </Box>
           ) : (
-            <ChevronDownIcon color="white" w="1.5rem" h="1.5rem" />
+            <></>
           )
         }
       >
@@ -101,7 +101,7 @@ const WalletButton = () => {
             key={wallet.adapter.name}
             onClick={() => onSelectWallet(wallet)}
             border={4}
-            isDisabled={isConnecting} // Disable button while connecting
+            isDisabled={isConnecting}
           >
             <Flex py={10} px={4}>
               <Box w="2rem" h="2rem" mr="1rem">

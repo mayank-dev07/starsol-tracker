@@ -14,7 +14,7 @@ const Landing = () => {
           <source src="/blackhole.webm" type="video/webm" />
         </video>
       </div>
-      <div className=" flex justify-center items-center text-lg md:text-4xl lg:text-5xl flex-col gap-6 md:gap-8 mt-32 md:mt-0 z-10 font-extralight">
+      <div className=" flex justify-center items-center text-lg md:text-4xl lg:text-5xl flex-col gap-6 md:gap-8 mt-32 md:mt-0 font-extralight">
         <p>introducing&nbsp;starsol&nbsp;tracker</p>
       </div>
 
