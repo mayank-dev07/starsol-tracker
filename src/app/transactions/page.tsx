@@ -12,6 +12,7 @@ import {
   truncatedPublicKey,
 } from "@/utils/helper";
 import { useWalletStore } from "@/utils/zustand";
+import { sign } from "crypto";
 
 interface TokenBalance {
   mintAddress: string;
@@ -28,7 +29,6 @@ const Transaction = () => {
   const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>([]);
   const [loadingTransactions, setLoadingTransactions] = useState(false);
   const [loadingTokenBalances, setLoadingTokenBalances] = useState(false);
-  const [transactionsFetched, setTransactionsFetched] = useState(false);
 
   useEffect(() => {
     console.log("Public key:", publicKey);
@@ -116,7 +116,6 @@ const Transaction = () => {
         `transactions-${publicKey}`,
         JSON.stringify(filteredTransactions)
       );
-      setTransactionsFetched(true);
     } catch (error) {
       console.error("Error fetching transactions:", error);
     } finally {
@@ -233,31 +232,41 @@ const Transaction = () => {
                     </span>
                   </div>
                 ) : (
-                  <table className="w-full text-sm text-left rtl:text-righttext-gray-400">
-                    <thead className="text-xs text-gray-700  bg-slate-950 dark:text-gray-400">
-                      <tr>
-                        <th scope="col" className="px-6 py-3">
-                          Mint Address
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Total Balance
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tokenBalances.map((token, index) => (
-                        <tr
-                          key={index}
-                          className="bg-slate-900 dark:border-gray-700"
-                        >
-                          <td className="px-6 py-4 font-medium text-green-600 whitespace-nowrap">
-                            {token.mintAddress}
-                          </td>
-                          <td className="px-6 py-4">{token.balance}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <>
+                    {tokenBalances.length > 0 ? (
+                      <table className="w-full text-sm text-left rtl:text-righttext-gray-400">
+                        <thead className="text-xs text-gray-700  bg-slate-950 dark:text-gray-400">
+                          <tr>
+                            <th scope="col" className="px-6 py-3">
+                              Mint Address
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Total Balance
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {tokenBalances.map((token, index) => (
+                            <tr
+                              key={index}
+                              className="bg-slate-900 dark:border-gray-700"
+                            >
+                              <td className="px-6 py-4 font-medium text-green-600 whitespace-nowrap">
+                                {token.mintAddress}
+                              </td>
+                              <td className="px-6 py-4">{token.balance}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="text-center p-4">
+                        <span className="text-blue-500">
+                          No tokens available
+                        </span>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
@@ -271,43 +280,51 @@ const Transaction = () => {
                   </div>
                 ) : (
                   <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                    <table className="w-full text-sm text-left rtl:text-righttext-gray-400">
-                      <thead className="text-xs text-gray-700  bg-slate-950 dark:text-gray-400">
-                        <tr>
-                          <th scope="col" className="px-6 py-3">
-                            Transaction Signature
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Block
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Age
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Timestamp
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Result
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {transactions.map((tx, index) => (
-                          <tr
-                            key={index}
-                            className="bg-slate-900 dark:border-gray-700"
-                          >
-                            <td className="px-6 py-4 font-medium text-green-600 whitespace-nowrap">
-                              {tx.signature}
-                            </td>
-                            <td className="px-6 py-4">{tx.block}</td>
-                            <td className="px-6 py-4">{tx.age}</td>
-                            <td className="px-6 py-4">{tx.timestamp}</td>
-                            <td className="px-6 py-4">{tx.result}</td>
+                    {transactions.length > 0 ? (
+                      <table className="w-full text-sm text-left rtl:text-righttext-gray-400">
+                        <thead className="text-xs text-gray-700  bg-slate-950 dark:text-gray-400">
+                          <tr>
+                            <th scope="col" className="px-6 py-3">
+                              Transaction Signature
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Block
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Age
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Timestamp
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Result
+                            </th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {transactions.map((tx, index) => (
+                            <tr
+                              key={index}
+                              className="bg-slate-900 dark:border-gray-700"
+                            >
+                              <td className="px-6 py-4 font-medium text-green-600 whitespace-nowrap">
+                                {tx.signature}
+                              </td>
+                              <td className="px-6 py-4">{tx.block}</td>
+                              <td className="px-6 py-4">{tx.age}</td>
+                              <td className="px-6 py-4">{tx.timestamp}</td>
+                              <td className="px-6 py-4">{tx.result}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="text-center p-4">
+                        <span className="text-blue-500">
+                          No transactions available
+                        </span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

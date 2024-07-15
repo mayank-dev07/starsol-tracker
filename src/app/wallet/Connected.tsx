@@ -7,12 +7,8 @@ import {
   ConfirmedSignatureInfo,
 } from "@solana/web3.js";
 import moment from "moment";
-import {
-  truncatedPublicKeyForTransaction,
-  truncatedPublicKey,
-} from "@/utils/helper";
+import { truncatedPublicKeyForTransaction } from "@/utils/helper";
 import { useWalletStore } from "@/utils/zustand";
-
 interface TokenBalance {
   mintAddress: string;
   balance: number;
@@ -20,15 +16,15 @@ interface TokenBalance {
 
 const Connected = () => {
   const publicKey = useWalletStore((state) => state.walletAddress);
-  const setShow = useWalletStore((state)=>state.setShow)  
-  const show = useWalletStore((state)=>state.show)
+  const setpublicKey = useWalletStore((state) => state.setWalletAddress);
+  const setShow = useWalletStore((state) => state.setShow);
+  const show = useWalletStore((state) => state.show);
   const [activeTab, setActiveTab] = useState("tokens");
   const [showTabs, setShowTabs] = useState(true);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>([]);
   const [loadingTransactions, setLoadingTransactions] = useState(false);
   const [loadingTokenBalances, setLoadingTokenBalances] = useState(false);
-  const [transactionsFetched, setTransactionsFetched] = useState(false);
 
   useEffect(() => {
     console.log("Public key:", publicKey);
@@ -87,8 +83,8 @@ const Connected = () => {
         5,
         3000
       );
-      if(signatures){
-        setShow(true)
+      if (signatures) {
+        setShow(true);
       }
 
       console.log(signatures);
@@ -116,7 +112,6 @@ const Connected = () => {
         `transactions-${publicKey}`,
         JSON.stringify(filteredTransactions)
       );
-      setTransactionsFetched(true);
     } catch (error) {
       console.error("Error fetching transactions:", error);
     } finally {
@@ -174,50 +169,75 @@ const Connected = () => {
     };
   }
 
+  const backToWallet = () => {
+    setTokenBalances([]);
+    setTransactions([]);
+    setpublicKey("");
+    setShow(false);
+  };
   return (
-    <div className={`min-h-screen flex-col py-24 container ${show? "flex":"hidden"}`}>
-      <div className="mb-4">
-        <ul
-          className="flex flex-wrap -mb-px text-sm font-medium text-center"
+    <div
+      className={`min-h-screen flex-col py-24 container ${
+        show ? "flex" : "hidden"
+      }`}
+    >
+      <div className={"mb-4"}>
+        <div
+          className="flex flex-wrap -mb-px text-sm font-medium text-center w-full justify-between"
           id="default-styled-tab"
           role="tablist"
         >
-          <li className="me-2" role="presentation">
+          <div className="flex">
+            <div className="me-2" role="presentation">
+              <button
+                className={`inline-block p-4 border-b-2 rounded-t-lg ${
+                  activeTab === "tokens"
+                    ? "text-yellow-500 border-yellow-500"
+                    : " hover:border-green-500 dark:hover:text-green-500  text-slate-600 border-slate-600"
+                }`}
+                onClick={() => handleTabClick("tokens")}
+                type="button"
+                role="tab"
+                aria-controls="tokens"
+                aria-selected={activeTab === "tokens"}
+              >
+                Tokens
+              </button>
+            </div>
+            <div className="me-2" role="presentation">
+              <button
+                className={`inline-block p-4 border-b-2 rounded-t-lg ${
+                  activeTab === "transactions"
+                    ? "text-yellow-500 border-yellow-500"
+                    : " hover:border-green-500 dark:hover:text-green-500  text-slate-600 border-slate-600"
+                }`}
+                onClick={() => handleTabClick("transactions")}
+                type="button"
+                role="tab"
+                aria-controls="transactions"
+                aria-selected={activeTab === "transactions"}
+              >
+                Transactions
+              </button>
+            </div>
+          </div>
+
+          <div className="flex justify-end items-end">
             <button
-              className={`inline-block p-4 border-b-2 rounded-t-lg ${
-                activeTab === "tokens"
-                  ? "text-yellow-500 border-yellow-500"
-                  : " hover:border-green-500 dark:hover:text-green-500  text-slate-600 border-slate-600"
-              }`}
-              onClick={() => handleTabClick("tokens")}
+              className={`inline-block p-4 border-b-2 rounded-t-lg 
+                
+                   hover:border-blue-500 dark:hover:text-blue-500  text-slate-600 border-slate-600
+              `}
+              onClick={backToWallet}
               type="button"
-              role="tab"
-              aria-controls="tokens"
-              aria-selected={activeTab === "tokens"}
             >
-              Tokens
+              Back
             </button>
-          </li>
-          <li className="me-2" role="presentation">
-            <button
-              className={`inline-block p-4 border-b-2 rounded-t-lg ${
-                activeTab === "transactions"
-                  ? "text-yellow-500 border-yellow-500"
-                  : " hover:border-green-500 dark:hover:text-green-500  text-slate-600 border-slate-600"
-              }`}
-              onClick={() => handleTabClick("transactions")}
-              type="button"
-              role="tab"
-              aria-controls="transactions"
-              aria-selected={activeTab === "transactions"}
-            >
-              Transactions
-            </button>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
 
-      {showTabs ? (
+      {showTabs && show ? (
         <div id="default-styled-tab-content" className="w-full mt-6">
           {activeTab === "tokens" && (
             <div className="" id="styled-tokens" role="tabpanel">
@@ -228,31 +248,39 @@ const Connected = () => {
                   </span>
                 </div>
               ) : (
-                <table className="w-full text-sm text-left rtl:text-righttext-gray-400">
-                  <thead className="text-xs text-gray-700  bg-slate-950 dark:text-gray-400">
-                    <tr>
-                      <th scope="col" className="px-6 py-3">
-                        Mint Address
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                        Total Balance
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tokenBalances.map((token, index) => (
-                      <tr
-                        key={index}
-                        className="bg-slate-900 dark:border-gray-700"
-                      >
-                        <td className="px-6 py-4 font-medium text-green-600 whitespace-nowrap">
-                          {token.mintAddress}
-                        </td>
-                        <td className="px-6 py-4">{token.balance}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <>
+                  {tokenBalances.length > 0 ? (
+                    <table className="w-full text-sm text-left rtl:text-righttext-gray-400">
+                      <thead className="text-xs text-gray-700  bg-slate-950 dark:text-gray-400">
+                        <tr>
+                          <th scope="col" className="px-6 py-3">
+                            Mint Address
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Total Balance
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tokenBalances.map((token, index) => (
+                          <tr
+                            key={index}
+                            className="bg-slate-900 dark:border-gray-700"
+                          >
+                            <td className="px-6 py-4 font-medium text-green-600 whitespace-nowrap">
+                              {token.mintAddress}
+                            </td>
+                            <td className="px-6 py-4">{token.balance}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="text-center p-4">
+                      <span className="text-blue-500">No tokens available</span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
@@ -264,43 +292,51 @@ const Connected = () => {
                 </div>
               ) : (
                 <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                  <table className="w-full text-sm text-left rtl:text-righttext-gray-400">
-                    <thead className="text-xs text-gray-700  bg-slate-950 dark:text-gray-400">
-                      <tr>
-                        <th scope="col" className="px-6 py-3">
-                          Transaction Signature
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Block
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Age
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Timestamp
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Result
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {transactions.map((tx, index) => (
-                        <tr
-                          key={index}
-                          className="bg-slate-900 dark:border-gray-700"
-                        >
-                          <td className="px-6 py-4 font-medium text-green-600 whitespace-nowrap">
-                            {tx.signature}
-                          </td>
-                          <td className="px-6 py-4">{tx.block}</td>
-                          <td className="px-6 py-4">{tx.age}</td>
-                          <td className="px-6 py-4">{tx.timestamp}</td>
-                          <td className="px-6 py-4">{tx.result}</td>
+                  {transactions.length > 0 ? (
+                    <table className="w-full text-sm text-left rtl:text-righttext-gray-400">
+                      <thead className="text-xs text-gray-700  bg-slate-950 dark:text-gray-400">
+                        <tr>
+                          <th scope="col" className="px-6 py-3">
+                            Transaction Signature
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Block
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Age
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Timestamp
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Result
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {transactions.map((tx, index) => (
+                          <tr
+                            key={index}
+                            className="bg-slate-900 dark:border-gray-700"
+                          >
+                            <td className="px-6 py-4 font-medium text-green-600 whitespace-nowrap">
+                              {tx.signature}
+                            </td>
+                            <td className="px-6 py-4">{tx.block}</td>
+                            <td className="px-6 py-4">{tx.age}</td>
+                            <td className="px-6 py-4">{tx.timestamp}</td>
+                            <td className="px-6 py-4">{tx.result}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="text-center p-4">
+                      <span className="text-blue-500">
+                        No transactions available
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
