@@ -22,7 +22,7 @@ const Footer = (props: Props) => {
               starsol tracker
             </span>
           </div>
-          <ul className="flex flex-wrap gap-2 justify-center items-center md:gap-8 items-center mb-6 text-base text-gray-500 sm:mb-0 dark:text-gray-400">
+          <ul className="flex flex-wrap gap-2 justify-center items-center md:gap-8 mb-6 text-base text-gray-500 sm:mb-0 dark:text-gray-400">
             <li>
               <Link href="/about">About</Link>
             </li>
