@@ -14,7 +14,7 @@ const Landing = () => {
           <source src="/blackhole.webm" type="video/webm" />
         </video>
       </div>
-      <div className=" flex justify-center items-center text-lg md:text-4xl lg:text-5xl flex-col gap-6 md:gap-8 mt-32 md:mt-0 font-extralight">
+      <div className=" flex justify-center items-center text-lg md:text-4xl lg:text-5xl flex-col gap-6 md:gap-8 mt-8 md:mt-0 font-extralight">
         <p>introducing&nbsp;starsol&nbsp;tracker</p>
       </div>
 
@@ -28,7 +28,7 @@ const Landing = () => {
         alt="bg"
         width={300}
         height={300}
-        className="object-contain absolute bottom-[450px] md:bottom-[-20px] right-20  md:right-0"
+        className="object-contain absolute bottom-[370px]  sm:bottom-[450px] md:bottom-[-20px] right-20  md:right-0"
       />
       <Image
         src="/pig.png"
